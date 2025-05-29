@@ -64,13 +64,13 @@ module.exports = {
 ┃ ⏰ 𝙹𝚘𝚒𝚗𝚎𝚍: ${time}
 ┃
 ╠══✦〘 𝙾𝚆𝙽𝙴𝚁 𝙸𝙽𝙵𝙾 〙✦══╣
-┃ 🧑‍💻 𝙽𝚊𝚖𝚎: 『Ｓ Ａ Ｉ Ｍ』
-┃ 🌐 𝙵𝙰𝙲𝙴𝙱𝙾𝙾𝙺: 𝐄𝐰'𝐫 𝐒𝐚𝐢𝐦
+┃ 🧑‍💻 𝙽𝚊𝚖𝚎: 『S O J I B』
+┃ 🌐 𝙵𝙰𝙲𝙴𝙱𝙾𝙾𝙺: SOJIB REZA
 ┃ 🗺️ 𝙲𝚘𝚞𝚗𝚝𝚛𝚢: Bangladesh
 ┃ ✅ 𝚂𝚝𝚊𝚝𝚞𝚜: Active
-┃ 📞 𝚆𝚑𝚊𝚝𝚜𝙰𝚙𝚙: 01729537588
-┃ ✉️ 𝙴𝚖𝚊𝚒𝚕: hrxnobita3@gmail.com
-┃ 🧵 𝚃𝚎𝚕𝚎𝚐𝚛𝚊𝚖: https://t.me/saimx69x
+┃ 📞 𝚆𝚑𝚊𝚝𝚜𝙰𝚙𝚙: 01727501820
+┃ ✉️ FB: https://www.facebook.com/share/16LtYVptxV/
+┃ 🧵 𝚃𝚎𝚕𝚎𝚐𝚛𝚊𝚖:......
 ┃ 💡 𝚃𝚒𝚙: Type /help to see all commands!
 ╚════════════════════╝`, targetThread);
 
