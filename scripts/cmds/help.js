@@ -31,7 +31,7 @@ module.exports = {
     if (args.length === 0) {
       const categories = {};
       let msg = "╔════════════ ∘◦ ✿ ◦∘ ════════════╗";
-      msg += `\n               ʜᴇʟᴘ ᴍᴇɴᴜ`;
+      msg += `\n               SUNG JINWOO`;
       msg += `\n╚════════════ ∘◦ ❀ ◦∘ ════════════╝\n`;
 
       for (const [name, value] of commands) {
@@ -63,7 +63,7 @@ module.exports = {
       msg += `\n╚═━──────────────━═╝`;
 
       msg += `\n\n╭─────⊹⊱✫⊰⊹─────╮`;
-      msg += `\n       ᴅᴇᴠ: ꜱ ᴀ ɪ ᴍ`;
+      msg += `\n       ᴅᴇᴠ: SUNG`;
       msg += `\n╰─────⊹⊱✫⊰⊹─────╯`;
 
       const helpListImages = ["https://files.catbox.moe/9f7p0a.jpg"];
