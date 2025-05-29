@@ -65,12 +65,12 @@ module.exports = {
 ┃
 ╠══✦〘 𝙾𝚆𝙽𝙴𝚁 𝙸𝙽𝙵𝙾 〙✦══╣
 ┃ 🧑‍💻 𝙽𝚊𝚖𝚎: 『S O J I B』
-┃ 🌐 𝙵𝙰𝙲𝙴𝙱𝙾𝙾𝙺: SOJIB REZA
+┃ 🌐 𝙵𝙰𝙲𝙴𝙱𝙾𝙾𝙺: ODD SOJIB 
 ┃ 🗺️ 𝙲𝚘𝚞𝚗𝚝𝚛𝚢: Bangladesh
 ┃ ✅ 𝚂𝚝𝚊𝚝𝚞𝚜: Active
 ┃ 📞 𝚆𝚑𝚊𝚝𝚜𝙰𝚙𝚙: 01727501820
-┃ ✉️ FB: https://www.facebook.com/share/16LtYVptxV/
-┃ 🧵 𝚃𝚎𝚕𝚎𝚐𝚛𝚊𝚖:......
+┃ ✉️ FB LINK : https://www.facebook.com/share/16LtYVptxV/
+┃ 🧵 𝚃𝚎𝚕𝚎𝚐𝚛𝚊𝚖:  ......
 ┃ 💡 𝚃𝚒𝚙: Type /help to see all commands!
 ╚════════════════════╝`, targetThread);
 
