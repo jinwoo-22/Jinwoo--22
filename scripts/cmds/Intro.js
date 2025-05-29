@@ -57,22 +57,22 @@ module.exports = {
     const body = `
 ╭═════『 👑 OWNER INTRO 』═════╮
 │
-│ ✨ Full Name: Habibur Rahman Saim  
-│ ✨ Nickname: Saim  
-│ 🎂 Age: 17+  
-│ 🗓️ Date of Birth: 15 March 2008 
+│ ✨ Full Name: SOJIB REZA  
+│ ✨ Nickname: S O J I B  
+│ 🎂 Age: SECRET  
+│ 🗓️ Date of Birth:SECRET 
 │ 🚹 Gender: Male  
 │ ☪️ Religion: Islam  
 │ 🌍 Nationality: Bangladeshi  
-│ 📍 Current Address: Islampur, Dhaka  
+│ 📍 Current Address: RAJSHAHI ,BANGLADESH   
 │ 🎓 Class: New 10  
 │ 💘 Relationship Status: Single  
-│ 📏 Height: 5'10"  
-│ ⚫ Favorite Color: Black  
-│ 🎶 Favorite Song: "Mann Mera"  
-│ 🍥 Favorite Anime: Naruto  
-│ 🎮 Favorite Game: Free Fire  
-│ 🆔 Game UID: 5640444634  
+│ 📏 Height: 5'8"  
+│ 🔵 Favorite Color: BLUE   
+│ 🎶 Favorite Song: "AADAT"  
+│ 🎙️ Favorite SINGER : AETHER ❤️‍🩹  
+│ 🎸 Favorite band: Highway   
+│ 😻 Choice : Russian   
 │
 ╰══════════════════════════════╯
 
