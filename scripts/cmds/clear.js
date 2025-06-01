@@ -21,34 +21,44 @@ module.exports = {
     const send = msg => api.sendMessage(msg, event.threadID);
 
     try {
-      // Initial cleaning message
       await send("🔄 BOT CLEANING........ ♻️");
 
       const cacheDir = path.join(__dirname, "..", "..", "cache");
       const tmpDir = path.join(__dirname, "..", "..", "tmp");
 
-      // Function to clear a folder
+      let totalFiles = 0;
+      let deletedFiles = 0;
+
       function clearFolder(dirPath) {
         if (fs.existsSync(dirPath)) {
-          for (const file of fs.readdirSync(dirPath)) {
+          const files = fs.readdirSync(dirPath);
+          totalFiles += files.length;
+          for (const file of files) {
             const filePath = path.join(dirPath, file);
             if (fs.lstatSync(filePath).isFile()) {
-              fs.unlinkSync(filePath);
+              try {
+                fs.unlinkSync(filePath);
+                deletedFiles++;
+              } catch (e) {
+                // Ignore deletion errors
+              }
             }
           }
         }
       }
 
-      // Clear both cache and tmp folders
       clearFolder(cacheDir);
       clearFolder(tmpDir);
 
-      // Success message
-      return send("✅ Bot has been successfully cleaned!");
+      const percent = totalFiles > 0 ? Math.round((deletedFiles / totalFiles) * 100) : 100;
+      const status = percent >= 70 ? "Good ✅" : "Bad ❌";
+
+      const msg = `✅ Bot has been successfully cleaned!\n📊 Clean Status: ${percent}% (${status})`;
+      return send(msg);
 
     } catch (err) {
       console.error("❌ Error while cleaning the bot:", err);
-      return send("❌ Error while cleaning the bot. See console for details.");
+      return send("❌ Error while cleaning the bot.\n📊 Clean Status: 0% (Bad ❌)");
     }
   }
 };
