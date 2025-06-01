@@ -22,6 +22,8 @@ module.exports = {
 
     const usedMem = process.memoryUsage().heapUsed / 1024 / 1024;
     const totalMem = os.totalmem() / 1024 / 1024;
+    const memPercent = (usedMem / totalMem) * 100;
+    const healthStatus = memPercent <= 70 ? "Good ✅" : "Bad ❌";
 
     const cpu = os.cpus()[0].model;
     const cores = os.cpus().length;
@@ -32,12 +34,13 @@ module.exports = {
 ╔════════════════════════════════╗
 ║         🤖 BOT STATUS 📶         ║
 ╠════════════════════════════════╣
-║ 🕒 Uptime   : ${hours}h ${minutes}m ${seconds}s
-║ 📦 RAM      : ${usedMem.toFixed(2)} MB / ${totalMem.toFixed(2)} MB
-║ 🧠 CPU      : ${cpu}
-║ 🧩 Cores    : ${cores}
-║ 💻 System   : ${platform} (${arch})
-║ 👑 Owner    : SOJIB REZA ⚡
+║ 🕒 Uptime     : ${hours}h ${minutes}m ${seconds}s
+║ 📦 RAM Usage  : ${usedMem.toFixed(2)} MB / ${totalMem.toFixed(2)} MB
+║ 📊 RAM Status : ${memPercent.toFixed(0)}% (${healthStatus})
+║ 🧠 CPU        : ${cpu}
+║ 🧩 Cores      : ${cores}
+║ 💻 System     : ${platform} (${arch})
+║ 👑 Owner      : SOJIB REZA ⚡
 ╚════════════════════════════════╝`;
 
     return message.reply(statusBox);
