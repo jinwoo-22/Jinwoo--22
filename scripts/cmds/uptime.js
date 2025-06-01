@@ -1,28 +1,32 @@
 module.exports = {
   config: {
     name: "uptime",
-    aliases: ["up", "upt"],
-    version: "1.0",
-    author: "VEX_ADNAN",
+    aliases: ["run", "up"],
+    version: "1.1",
     role: 0,
-    shortDescription: {
-      en: "Displays the uptime of the bot."
-    },
-    longDescription: {
-      en: "Displays the amount of time that the bot has been running for."
-    },
-    category: "System",
+    author: "GPT X SOJIB ⚡",
+    countDown: 2,
+    longDescription: "Show bot running time",
+    category: "system",
     guide: {
-      en: "Use {p}uptime to display the uptime of the bot."
+      en: "{pn} - Show how long the bot has been running"
     }
   },
-  onStart: async function ({ api, event, args }) {
-    const uptime = process.uptime();
-    const seconds = Math.floor(uptime % 60);
-    const minutes = Math.floor((uptime / 60) % 60);
-    const hours = Math.floor((uptime / (60 * 60)) % 24);
-    const days = Math.floor(uptime / (60 * 60 * 24));
-    const uptimeString = `\n\nl ꙰ → ${hours} ʜᴏᴜʀs\n\nl ꙰ → ${minutes} ᴍɪɴᴜᴛᴇs\n\nl ꙰ → ${seconds} sᴇᴄᴏɴᴅ\n\n✧─────────────────✧`;
-    api.sendMessage(`✧─────────────────✧\n\n💥 ʜᴇʟʟᴏ ᴍᴇɪsᴛᴇʀ, ᴛʜᴇ ʙᴏᴛ ʜᴀs ʙᴇᴇɴ ʀᴜɴɴɪɴɢ ғᴏʀ ↓\n↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ ${uptimeString}`, event.threadID);
+
+  onStart: async function ({ message }) {
+    const totalSeconds = process.uptime();
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    const uptime = `${hours}h ${minutes}m ${seconds}s`;
+
+    return message.reply(
+`╭━━━━━━━━━━━━━━━━━╮
+┃ 🤖  BOT IS RUNNING...
+┃ 
+┃ ⏱️ UPTIME: ${uptime}
+┃ 👑 OWNER: SOJIB REZA ⚡
+╰━━━━━━━━━━━━━━━━━╯`
+    );
   }
 };
