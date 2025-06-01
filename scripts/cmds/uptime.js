@@ -2,7 +2,7 @@ module.exports = {
   config: {
     name: "uptime",
     aliases: ["run", "up"],
-    version: "1.1",
+    version: "1.2",
     role: 0,
     author: "GPT X SOJIB ⚡",
     countDown: 2,
@@ -15,10 +15,11 @@ module.exports = {
 
   onStart: async function ({ message }) {
     const totalSeconds = process.uptime();
-    const hours = Math.floor(totalSeconds / 3600);
+    const days = Math.floor(totalSeconds / (3600 * 24));
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = Math.floor(totalSeconds % 60);
-    const uptime = `${hours}h ${minutes}m ${seconds}s`;
+    const uptime = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
     return message.reply(
 `╭━━━━━━━━━━━━━━━━━╮
