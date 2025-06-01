@@ -1,71 +1,54 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   config: {
-    name: "clean",
-    aliases: [],//["c"] add aliases like that 
-    author: "kshitiz",  
-  version: "1.5.2",
-  set usePrefix: false,
-  set hasPermission: "",
-  set role: false,
-  setauthor: "",
-  setshortDescription: "",
-  setLongDescription: "",
-  credits: "",
-    cooldowns: 5,
-    role: 2,
-    shortDescription: {
-      en: ""
-    },
-    longDescription: {
-      en: "help to clean cache and tmp folder"
-  category: "",
-    category: "owner",
+    name: "clear",
+    aliases: ["botclean", "clean"],
+    version: "1.0.0",
+    author: "SOJIB X GPT",
+    countDown: 5,
+    role: 1, // Only admin can use
+    shortDescription: "Clear bot temporary files",
+    longDescription: "Cleans the bot's cache and temporary data",
+    category: "system",
     guide: {
-      en: "{p}{n}"
+      en: "{pn}"
     }
   },
+
   onStart: async function ({ api, event }) {
-    const cacheFolderPath = path.join(__dirname, 'cache');
-    const tmpFolderPath = path.join(__dirname, 'tmp');
+    const send = msg => api.sendMessage(msg, event.threadID);
 
+    try {
+      // Initial cleaning message
+      await send("🔄 BOT CLEANING........ ♻️");
 
-    api.sendMessage({ body: 'Cleaning cache and tmp folders...', attachment: null }, event.threadID, () => {
+      const cacheDir = path.join(__dirname, "..", "..", "cache");
+      const tmpDir = path.join(__dirname, "..", "..", "tmp");
 
-      const cleanFolder = (folderPath) => {
-
-        if (fs.existsSync(folderPath)) {
-
-          const files = fs.readdirSync(folderPath);
-
-          if (files.length > 0) {
-
-            files.forEach(file => {
-              const filePath = path.join(folderPath, file);
-
+      // Function to clear a folder
+      function clearFolder(dirPath) {
+        if (fs.existsSync(dirPath)) {
+          for (const file of fs.readdirSync(dirPath)) {
+            const filePath = path.join(dirPath, file);
+            if (fs.lstatSync(filePath).isFile()) {
               fs.unlinkSync(filePath);
-              console.log(`File ${file} deleted successfully from ${folderPath}!`);
-            });
-
-            console.log(`All files in the ${folderPath} folder deleted successfully!`);
-          } else {
-            console.log(`${folderPath} folder is empty.`);
+            }
           }
-        } else {
-          console.log(`${folderPath} folder not found.`);
         }
-      };
+      }
 
+      // Clear both cache and tmp folders
+      clearFolder(cacheDir);
+      clearFolder(tmpDir);
 
-      cleanFolder(cacheFolderPath);
+      // Success message
+      return send("✅ Bot has been successfully cleaned!");
 
-
-      cleanFolder(tmpFolderPath);
-
-
-      api.sendMessage({ body: 'Cache and tmp folders cleaned successfully!' }, event.threadID);
-    });
-  },
+    } catch (err) {
+      console.error("❌ Error while cleaning the bot:", err);
+      return send("❌ Error while cleaning the bot. See console for details.");
+    }
+  }
 };
