@@ -18,10 +18,9 @@ module.exports = {
   },
 
   onStart: async function ({ api, event }) {
-    const send = msg => api.sendMessage(msg, event.threadID);
-
     try {
-      await send("🔄 BOT CLEANING........ ♻️");
+      // Send initial cleaning message and keep message ID
+      const info = await api.sendMessage("🔄 BOT CLEANING........ ♻️", event.threadID);
 
       const cacheDir = path.join(__dirname, "..", "..", "cache");
       const tmpDir = path.join(__dirname, "..", "..", "tmp");
@@ -53,12 +52,17 @@ module.exports = {
       const percent = totalFiles > 0 ? Math.round((deletedFiles / totalFiles) * 100) : 100;
       const status = percent >= 70 ? "Good ✅" : "Bad ❌";
 
-      const msg = `✅ Bot has been successfully cleaned!\n📊 Clean Status: ${percent}% (${status})`;
-      return send(msg);
+      const finalMsg = `✅ Bot has been successfully cleaned!\n📊 Clean Status: ${percent}% (${status})`;
+
+      // Unsend the initial cleaning message
+      await api.unsendMessage(info.messageID);
+
+      // Send final cleaning status message
+      return api.sendMessage(finalMsg, event.threadID);
 
     } catch (err) {
       console.error("❌ Error while cleaning the bot:", err);
-      return send("❌ Error while cleaning the bot.\n📊 Clean Status: 0% (Bad ❌)");
+      return api.sendMessage("❌ Error while cleaning the bot.\n📊 Clean Status: 0% (Bad ❌)", event.threadID);
     }
   }
 };
