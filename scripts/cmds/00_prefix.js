@@ -6,7 +6,7 @@ module.exports = {
   config: {
     name: "prefix",
     version: "1.5",
-    author: "Ew'r Saim",
+    author: "GPT X SOJIB ",
     countDown: 5,
     role: 0,
     description: "Change the bot prefix in your chat box or globally (admin only)",
@@ -124,19 +124,16 @@ module.exports = {
 
       const uptime = formatUptime(uptimeMs);
 
-      return message.reply({
-        body:
-`➤➤➤ 𝗣𝗥𝗘𝗙𝗜𝗫 𝗜𝗡𝗙𝗢 ➤➤➤
-➤ 🌍 Global: ${globalPrefix}
-➤ 💬 Chat: ${threadPrefix}
-➤ 📘 Help: ${threadPrefix}help
-➤ ⏰ Time: ${currentTime}
-➤ ⏳ Uptime: ${uptime}
-➤ 👤 Your ID: ${event.senderID}
-➤ ✍️ Dev: ODD SOJIB
-➤➤➤➤➤➤➤➤➤➤➤➤➤`,
-        attachment: await utils.getStreamFromURL("https://files.catbox.moe/27or5a.jpg")
-      });
+      return message.reply(
+`╭─━━━❰ 𝗣𝗥𝗘𝗙𝗜𝗫 𝗜𝗡𝗙𝗢 ❱━━━─╮
+│ 🧭 Global   :  ${globalPrefix}
+│ 💬 Chat     :  ${threadPrefix}
+│ 📘 Help     :  ${threadPrefix}help
+│ 🕒 Time     :  ${currentTime}
+│ ⏱️ Uptime   :  ${uptime}
+│ 🧑 User ID  :  ${event.senderID}
+╰─━━━━━━━━━━━━━━━━━━━─╯`
+      );
     }
   }
 };
