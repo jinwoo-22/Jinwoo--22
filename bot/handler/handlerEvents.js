@@ -2,7 +2,7 @@ module.exports = function ({ globalGoat }) {
   const config = globalGoat.config;
 
   // ✅ Private Mode Checker
-  const isAllowed = (61550628934323) => {
+  const isAllowed = () => {
     return !config.privateMode?.enable || config.privateMode.allowedUIDs.includes(uid);
   };
 
