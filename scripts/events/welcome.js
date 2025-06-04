@@ -20,7 +20,7 @@ module.exports = {
     const adderName = adderInfo[adderID]?.name || "Someone";
 
     if (addedUsers.some(user => user.userFbId === api.getCurrentUserID())) {
-      return message.send("🌸 ᴛʜᴀɴᴋꜱ ꜰᴏʀ ᴀᴅᴅɪɴɢ ᴍᴇ ʜᴇʀᴇ!");
+      return message.send("🌸 𝑻𝒉𝒂𝒏𝒌𝒔 𝒇𝒐𝒓 𝒂𝒅𝒅𝒊𝒏𝒈 𝒎𝒆 𝒉𝒆𝒓𝒆! ");
     }
 
     const names = addedUsers.map(u => u.fullName).join(", ");
