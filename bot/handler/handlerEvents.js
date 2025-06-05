@@ -1,66 +1,156 @@
-module.exports = function ({ globalGoat }) {
-  const config = globalGoat.config;
+const fs = require("fs-extra");
+const nullAndUndefined = [undefined, null];
+// const { config } = global.GoatBot;
+// const { utils } = global;
 
-  // ✅ Private Mode Checker
-  const isAllowed = () => {
-    return !config.privateMode?.enable || config.privateMode.allowedUIDs.includes(uid);
-  };
+function getType(obj) {
+	return Object.prototype.toString.call(obj).slice(8, -1);
+}
 
-  return {
-    // ✅ onChat: when a message is received
-    async onChat({ message, event }) {
-      if (!isAllowed(event.senderID)) return;
-      console.log(`[CHAT] ${event.senderID}: ${message.body}`);
-      // Place your command or message handler logic here
-    },
+function getRole(threadData, senderID) {
+	const adminBot = global.GoatBot.config.adminBot || [];
+	if (!senderID)
+		return 0;
+	const adminBox = threadData ? threadData.adminIDs || [] : [];
+	return adminBot.includes(senderID) ? 2 : adminBox.includes(senderID) ? 1 : 0;
+}
 
-    // ✅ onReaction: when someone reacts to a message
-    async onReaction({ message, event }) {
-      if (!isAllowed(event.senderID)) return;
+function getText(type, reason, time, targetID, lang) {
+	const utils = global.utils;
+	if (type == "userBanned")
+		return utils.getText({ lang, head: "handlerEvents" }, "userBanned", reason, time, targetID);
+	else if (type == "threadBanned")
+		return utils.getText({ lang, head: "handlerEvents" }, "threadBanned", reason, time, targetID);
+	else if (type == "onlyAdminBox")
+		return utils.getText({ lang, head: "handlerEvents" }, "onlyAdminBox");
+	else if (type == "onlyAdminBot")
+		return utils.getText({ lang, head: "handlerEvents" }, "onlyAdminBot");
+}
 
-      if (event.reaction === "😾") {
-        try {
-          await globalGoat.api.deleteMessage(event.messageID);
-          console.log(`😾 Deleted message: ${event.messageID}`);
-        } catch (err) {
-          console.error("❌ Failed to delete message:", err);
-        }
-      }
-    },
+function replaceShortcutInLang(text, prefix, commandName) {
+	return text
+		.replace(/\{(?:p|prefix)\}/g, prefix)
+		.replace(/\{(?:n|name)\}/g, commandName)
+		.replace(/\{pn\}/g, `${prefix}${commandName}`);
+}
 
-    // ✅ onReply: when someone replies to the bot
-    async onReply({ message, event }) {
-      if (!isAllowed(event.senderID)) return;
-      console.log(`[REPLY] ${event.senderID}: ${message.body}`);
-    },
+function getRoleConfig(utils, command, isGroup, threadData, commandName) {
+	let roleConfig;
+	if (utils.isNumber(command.config.role)) {
+		roleConfig = {
+			onStart: command.config.role
+		};
+	}
+	else if (typeof command.config.role == "object" && !Array.isArray(command.config.role)) {
+		if (!command.config.role.onStart)
+			command.config.role.onStart = 0;
+		roleConfig = command.config.role;
+	}
+	else {
+		roleConfig = {
+			onStart: 0
+		};
+	}
 
-    // ✅ onEvent: handles other events
-    async onEvent({ message, event }) {
-      if (!isAllowed(event.senderID)) return;
-      console.log(`[EVENT] from ${event.senderID}`);
-    },
+	if (isGroup)
+		roleConfig.onStart = threadData.data.setRole?.[commandName] ?? roleConfig.onStart;
 
-    // ✅ handlerEvent: optional handler for supported events
-    async handlerEvent({ message, event }) {
-      if (!isAllowed(event.senderID)) return;
-      console.log(`[handlerEvent] from ${event.senderID}`);
-    },
+	for (const key of ["onChat", "onStart", "onReaction", "onReply"]) {
+		if (roleConfig[key] == undefined)
+			roleConfig[key] = roleConfig.onStart;
+	}
 
-    // ✅ Optional: presence, read receipt, and typing indicators
-    async presence() {},
-    async read_receipt() {},
-    async typ() {},
+	return roleConfig;
+	// {
+	// 	onChat,
+	// 	onStart,
+	// 	onReaction,
+	// 	onReply
+	// }
+}
 
-    // ✅ Return all handlers
-    return: {
-      onChat: this.onChat,
-      onReaction: this.onReaction,
-      onReply: this.onReply,
-      onEvent: this.onEvent,
-      handlerEvent: this.handlerEvent,
-      presence: this.presence,
-      read_receipt: this.read_receipt,
-      typ: this.typ
-    }
-  };
-};
+function isBannedOrOnlyAdmin(userData, threadData, senderID, threadID, isGroup, commandName, message, lang) {
+	const config = global.GoatBot.config;
+	const { adminBot, hideNotiMessage } = config;
+
+	// check if user banned
+	const infoBannedUser = userData.banned;
+	if (infoBannedUser.status == true) {
+		const { reason, date } = infoBannedUser;
+		if (hideNotiMessage.userBanned == false)
+			message.reply(getText("userBanned", reason, date, senderID, lang));
+		return true;
+	}
+
+	// check if only admin bot
+	if (
+		config.adminOnly.enable == true
+		&& !adminBot.includes(senderID)
+		&& !config.adminOnly.ignoreCommand.includes(commandName)
+	) {
+		if (hideNotiMessage.adminOnly == false)
+			message.reply(getText("onlyAdminBot", null, null, null, lang));
+		return true;
+	}
+
+	// ==========    Check Thread    ========== //
+	if (isGroup == true) {
+		if (
+			threadData.data.onlyAdminBox === true
+			&& !threadData.adminIDs.includes(senderID)
+			&& !(threadData.data.ignoreCommanToOnlyAdminBox || []).includes(commandName)
+		) {
+			// check if only admin box
+			if (!threadData.data.hideNotiMessageOnlyAdminBox)
+				message.reply(getText("onlyAdminBox", null, null, null, lang));
+			return true;
+		}
+
+		// check if thread banned
+		const infoBannedThread = threadData.banned;
+		if (infoBannedThread.status == true) {
+			const { reason, date } = infoBannedThread;
+			if (hideNotiMessage.threadBanned == false)
+				message.reply(getText("threadBanned", reason, date, threadID, lang));
+			return true;
+		}
+	}
+	return false;
+}
+
+
+function createGetText2(langCode, pathCustomLang, prefix, command) {
+	const commandType = command.config.countDown ? "command" : "command event";
+	const commandName = command.config.name;
+	let customLang = {};
+	let getText2 = () => { };
+	if (fs.existsSync(pathCustomLang))
+		customLang = require(pathCustomLang)[commandName]?.text || {};
+	if (command.langs || customLang || {}) {
+		getText2 = function (key, ...args) {
+			let lang = command.langs?.[langCode]?.[key] || customLang[key] || "";
+			lang = replaceShortcutInLang(lang, prefix, commandName);
+			for (let i = args.length - 1; i >= 0; i--)
+				lang = lang.replace(new RegExp(`%${i + 1}`, "g"), args[i]);
+			return lang || `❌ Can't find text on language "${langCode}" for ${commandType} "${commandName}" with key "${key}"`;
+		};
+	}
+	return getText2;
+}
+
+module.exports = function (api, threadModel, userModel, dashBoardModel, globalModel, usersData, threadsData, dashBoardData, globalData) {
+	return async function (event, message) {
+
+		const { utils, client, GoatBot } = global;
+		const { getPrefix, removeHomeDir, log, getTime } = utils;
+		const { config, configCommands: { envGlobal, envCommands, envEvents } } = GoatBot;
+		const { autoRefreshThreadInfoFirstTime } = config.database;
+		let { hideNotiMessage = {} } = config;
+
+		const { body, messageID, threadID, isGroup } = event;
+
+		// Check if has threadID
+		if (!threadID)
+			return;
+
+		const senderID = event.userID || ev
