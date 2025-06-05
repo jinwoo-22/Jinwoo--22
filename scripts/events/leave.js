@@ -1,59 +1,105 @@
-const axios = require("axios");
-
-const fs = require("fs-extra");
-
-const request = require("request");
+const { getTime, drive } = global.utils;
 
 module.exports = {
+  config: {
+    name: "leave",
+    version: "1.4",
+    author: "NTKhang",
+    category: "events",
+  },
 
-	config: {
+  langs: {
+    en: {
+      session1: "morning",
+      session2: "noon",
+      session3: "afternoon",
+      session4: "evening",
+      leaveType1: "left",
+      leaveType2: "was kicked from",
+      defaultLeaveMessage: "{userName} {type} the group",
+    },
+  },
 
-		name: "Out",
+  onStart: async ({ threadsData, message, event, api, usersData, getLang }) => {
+    if (event.logMessageType == "log:unsubscribe")
+      return async function () {
+        const { threadID } = event;
+        const threadData = await threadsData.get(threadID);
+        if (!threadData.settings.sendLeaveMessage) return;
+        const { leftParticipantFbId } = event.logMessageData;
+        if (leftParticipantFbId == api.getCurrentUserID()) return;
+        const hours = getTime("HH");
 
-		aliases: ["l"],
+        const threadName = threadData.threadName;
+        const userName = await usersData.getName(leftParticipantFbId);
+        let antiout = await threadsData.get(threadID, "settings.antiOut");
+        if (antiout == true) {
+          api.addUserToGroup(leftParticipantFbId, threadID);
+        }
 
-		version: "1.0",
+        // {userName}   : name of the user who left the group
+        // {type}       : type of the message (leave)
+        // {boxName}    : name of the box
+        // {threadName} : name of the box
+        // {time}       : time
+        // {session}    : session
 
-		author: "Sandy",
+        let { leaveMessage = getLang("defaultLeaveMessage") } = threadData.data;
+        const form = {
+          mentions: leaveMessage.match(/\{userNameTag\}/g)
+            ? [
+                {
+                  tag: userName,
+                  id: leftParticipantFbId,
+                },
+              ]
+            : null,
+        };
 
-		countDown: 5,
+        leaveMessage = leaveMessage
+          .replace(/\{userName\}|\{userNameTag\}/g, userName)
+          .replace(
+            /\{type\}/g,
+            leftParticipantFbId == event.author
+              ? getLang("leaveType1")
+              : getLang("leaveType2")
+          )
+          .replace(/\{threadName\}|\{boxName\}/g, threadName)
+          .replace(/\{time\}/g, hours)
+          .replace(
+            /\{session\}/g,
+            hours <= 10
+              ? getLang("session1")
+              : hours <= 12
+              ? getLang("session2")
+              : hours <= 18
+              ? getLang("session3")
+              : getLang("session4")
+          );
 
-		role: 2,
+        form.body = leaveMessage;
 
-		shortDescription: "bot will leave gc",
+        if (leaveMessage.includes("{userNameTag}")) {
+          form.mentions = [
+            {
+              id: leftParticipantFbId,
+              tag: userName,
+            },
+          ];
+        }
 
-		longDescription: "",
-
-		category: "admin",
-
-		guide: {
-
-			vi: "{pn} [tid,blank]",
-
-			en: "{pn} [tid,blank]"
-
-		}
-
-	},
-
-
-
-	onStart: async function ({ api,event,args, message }) {
-
- var id;
-
- if (!args.join(" ")) {
-
- id = event.threadID;
-
- } else {
-
- id = parseInt(args.join(" "));
-
- }
-
- return api.sendMessage('▣ 𝗕𝗢𝗧 𝗟𝗘𝗔𝗩𝗘:\n》Mon succès est inévitable, car je suis destiné à être au sommet.\n\n➤𝗕𝗘𝗬 𝗟𝗘𝗦 𝗡𝗔𝗭𝗘𝗦', id, () => api.removeUserFromGroup(api.getCurrentUserID(), id))
-
-		}
-
-		}
+        if (threadData.data.leaveAttachment) {
+          const files = threadData.data.leaveAttachment;
+          const attachments = files.reduce((acc, file) => {
+            acc.push(drive.getFile(file, "stream"));
+            return acc;
+          }, []);
+          form.attachment = (await Promise.allSettled(attachments))
+            .filter(({ status }) => status == "fulfilled")
+            .map(({ value }) => value);
+        }
+        message.send(form);
+      };
+  },
+};
+```
